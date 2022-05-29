@@ -25,3 +25,9 @@ variable "private_cidr_block" {
   description = "vpc-name for the eks cluster"
   default     = [ "10.0.100.0/24", "10.0.150.0/24" ]
 }
+
+variable "eks_cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+  default     = "Cali-EKS"
+}
