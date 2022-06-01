@@ -29,5 +29,4 @@ variable "private_cidr_block" {
 variable "eks_cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "Cali-EKS"
 }

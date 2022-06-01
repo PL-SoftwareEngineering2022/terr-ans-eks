@@ -10,11 +10,13 @@ locals {
 
 # VPC for the cali eks cluster
 resource "aws_vpc" "cali-vpc" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
-    Name = var.vpc-name
+    Name                                            = var.vpc-name
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
   }
 }
@@ -29,15 +31,15 @@ resource "aws_internet_gateway" "cali-igw" {
 
 #public subnet for cali-eks cluster
 resource "aws_subnet" "cali-pub-subnet" {
-  count      = length(var.pub_cidr_block)
-  vpc_id     = aws_vpc.cali-vpc.id
-  cidr_block = element(var.pub_cidr_block,count.index)
+  count             = length(var.pub_cidr_block)
+  vpc_id            = aws_vpc.cali-vpc.id
+  cidr_block        = element(var.pub_cidr_block,count.index)
   availability_zone = element(local.avail_zone,count.index)
 
   tags = {
-    Name = local.public-subnet-name
+    Name                                            = local.public-subnet-name
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/elb" = 1
+    "kubernetes.io/role/elb"                        = 1
 
   }
 }
@@ -113,4 +115,4 @@ resource "aws_route_table_association" "cali-private-RTA" {
 }
 
 # notes:
-# you have to have a count to utilize a count index; see resource- subnet above
+# you have to have a count to utilize a count index; see resource-subnet above
