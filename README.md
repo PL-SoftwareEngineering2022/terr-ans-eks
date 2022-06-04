@@ -1,1 +1,1 @@
-This terrafrom configuration creates an EKS cluster with Fargate.
+This terrafrom configuration creates an `EKS cluster with Fargate.`
