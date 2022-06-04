@@ -10,6 +10,7 @@ module "network" {
 
 module "eks" {
   source                          = "./modules/eks"
+  region                          = var.region
   aws_priv_subnet_id              = module.network.private-subnet-ids
   aws_pub_subnet_id               = module.network.public-subnet-ids
   eks_cluster_name                = var.eks_cluster_name
