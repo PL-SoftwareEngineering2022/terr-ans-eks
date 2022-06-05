@@ -7,9 +7,10 @@ This terrafrom configuration creates an `EKS cluster with Fargate.`
 
 - to check it was installed: 
 
-
-- `aws eks update-kubeconfig --region us-west-1 --name cali-EKS-cluster` : generates a `~/.kube/config`. 
-    - *To remove this file, run `rm -rf ~/.kube/config`*
+- To generate a `~/.kube/config`, run the folloing command:
+    -  `aws eks update-kubeconfig --region ${REGION} --name ${CLUSTER_NAME}`
+        - `aws eks update-kubeconfig --region us-west-1 --name cali-EKS-cluster`
+            - *To remove this file, run:* `rm -rf ~/.kube/config`
 
 - run kubectl commands
     - `kubectl get all`
