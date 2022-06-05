@@ -177,7 +177,7 @@ resource "helm_release" "aws-load-balancer-controller" {
 
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  namespace  = var.namespace #<==alb-controller namesapce
+  namespace  = var.namespace #<==alb-controller namespace
 
   set {
     name  = "clusterName"
