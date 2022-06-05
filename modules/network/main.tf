@@ -40,15 +40,14 @@ resource "aws_subnet" "cali-pub-subnet" {
     Name                                            = local.public-subnet-name
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/elb"                        = 1
-
   }
 }
 
 #private subnet for cali-eks cluster
 resource "aws_subnet" "cali-private-subnet" {
-  count      = length(var.private_cidr_block)
-  vpc_id     = aws_vpc.cali-vpc.id
-  cidr_block = element(var.private_cidr_block,count.index) # element helps map/apply the values correspondingly
+  count             = length(var.private_cidr_block)
+  vpc_id            = aws_vpc.cali-vpc.id
+  cidr_block        = element(var.private_cidr_block,count.index) # element helps map/apply the values correspondingly
   availability_zone = element(local.avail_zone,count.index)
 
   tags = {
@@ -58,16 +57,20 @@ resource "aws_subnet" "cali-private-subnet" {
   }
 }
 
+resource "aws_eip" "cali-elastic-ip" {
+  vpc = true
+  #depends_on = [aws_internet_gateway.cali-igw]
+}
+
 resource "aws_nat_gateway" "cali-nat-gw" {
   subnet_id     = aws_subnet.cali-pub-subnet[0].id # nat gateway is attached to one public subnet. 
+  allocation_id = aws_eip.cali-elastic-ip.id
+  depends_on = [aws_internet_gateway.cali-igw]
 
   tags = {
     Name = "cali-nat-gw"
   }
-
-  /* To ensure proper ordering, it is recommended to add an explicit dependency
-  on the Internet Gateway for the VPC.*/
-  depends_on = [aws_internet_gateway.cali-igw]
+  /* To ensure proper ordering, it is recommended to add an explicit dependency on the Internet Gateway for the VPC.*/
 }
 
 #public Route Table and Route Table Association
@@ -85,11 +88,11 @@ resource "aws_route_table" "cali-public-RT" {
 }
 
 resource "aws_route_table_association" "cali-public-RTA" {
-  gateway_id     = aws_internet_gateway.cali-igw.id 
-  # count        = length(var.pub_cidr_block)
-  # subnet_id    = element(aws_subnet.cali-pub-subnet.*.id,count.index)
+  count        = length(var.pub_cidr_block)
+  subnet_id    = element(aws_subnet.cali-pub-subnet.*.id,count.index)
+  # gateway_id     = aws_internet_gateway.cali-igw.id 
   #The gateway ID to create an association. Conflicts with subnet_id.
-  route_table_id = aws_route_table.cali-private-RT.id
+  route_table_id = aws_route_table.cali-public-RT.id
 }
 
 # Private Route Table and Route Table Association
@@ -97,7 +100,7 @@ resource "aws_route_table" "cali-private-RT" {
   vpc_id = aws_vpc.cali-vpc.id
 
   route {
-    cidr_block     = var.vpc_cidr
+    cidr_block     = "0.0.0.0/0" #var.vpc_cidr
     nat_gateway_id = aws_nat_gateway.cali-nat-gw.id
   }
 
@@ -107,9 +110,9 @@ resource "aws_route_table" "cali-private-RT" {
 }
 
 resource "aws_route_table_association" "cali-private-RTA" {
-  gateway_id     = aws_nat_gateway.cali-nat-gw.id 
-  # count        = length(local.avail_zone)
-  # subnet_id    = element(aws_subnet.cali-private-subnet.*.id,count.index)
+  count        = length(var.private_cidr_block)
+  subnet_id    = element(aws_subnet.cali-private-subnet.*.id,count.index)
+  # gateway_id     = aws_nat_gateway.cali-nat-gw.id 
   #The gateway ID to create an association. Conflicts with subnet_id.
   route_table_id = aws_route_table.cali-private-RT.id
 }
