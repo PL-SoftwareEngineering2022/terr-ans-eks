@@ -17,8 +17,8 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region  = var.region
-  #profile = "default"
+  region  = var.region #"us-west-1" changed to var.region so that Jenkins can read the region from the 
+  #profile = "default" # commented becasue this "~/.aws/credentials" file is local and not passed to Jenkins
 }
 
 data "aws_eks_cluster" "cluster" {

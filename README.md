@@ -26,26 +26,39 @@ This terrafrom configuration creates an `EKS cluster with Fargate.`
     - `kubectl get svc`
     - `kubectl get sa`
     - `kubectl get ...`
-- to destroy the resources, first delete the ingress:
+- **to destroy the resources, first delete the ingress:**
     - `kubectl delete ingress -n fargate-node owncloud-lb`
         - then you can run a `terraform destroy -auto-approve`
 
 - **Install a Jenkins Server:**
-    - *Jenkins is dependent on Java*
+    1. *Jenkins is dependent on Java*
+        - *Install Java*
+- https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
+     - sudo apt update
+        - *check if java is already installed:* 
+     - java -version
+     - sudo apt install default-jre
+     - sudo apt install default-jdk
+     - javac -version
+    2. *Install Jenkins*
+- https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-18-04
+    - wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+    - sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+    - sudo apt update
+    - sudo apt install jenkins
+    - sudo systemctl start jenkins
+    - sudo systemctl status jenkins
+    - sudo ufw allow 8080
+    - sudo ufw status
 
-https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-18-04
-- wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
-- sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-- sudo apt update
-- sudo apt install jenkins
-- sudo systemctl start jenkins
-- sudo systemctl status jenkins
-- sudo ufw allow 8080
-- sudo ufw status
-- If the firewall is inactive, the following commands will allow OpenSSH and enable the firewall:
+        - *If the firewall is inactive, the following commands will allow OpenSSH and enable the firewall:*
 
-- sudo ufw allow OpenSSH
-- sudo ufw enable
+    - sudo ufw allow OpenSSH
+    - sudo ufw enable
+        - *Retrieve one time Jenkins password from the server*
+    - sudo cat /var/lib/jenkins/secrets/initialAdminPassword (paste this information on the Jenkins console and configure your Jenkins server).
 
-    - *Retrieve one time Jenkins password from the server*
-- sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+   - **Additional Info:**
+   - * Configuring AWS on Jenkins:*
+    1. https://aws.amazon.com/blogs/compute/building-a-jenkins-pipeline-with-aws-sam/
+    2. https://youtu.be/ScgSeUXTdAM
