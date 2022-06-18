@@ -17,8 +17,8 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  #region  = "us-west-1"
-  # profile = "default"
+  region  = var.region
+  #profile = "default"
 }
 
 data "aws_eks_cluster" "cluster" {
