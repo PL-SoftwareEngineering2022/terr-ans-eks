@@ -5,7 +5,7 @@ pipeline{
     }   
    parameters {
         string(name: 'environment', defaultValue: 'default', description: 'Workspace/environment file to use for deployment')
-        booleanParam(name: 'autoApprove', defaultValue: true, description: 'Automatically run apply after generating plan?')
+        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
         booleanParam(name: 'destroy', defaultValue: false, description: 'Destroy Terraform build?')
         // destroy parameter is false because you have to delete the ingress (see README.md) before doing a terraform destroy or it will leave some resources undestroyed.
     }
@@ -14,7 +14,6 @@ pipeline{
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     }
     
-
     stages {
         
            stage('Git Checkout') {
